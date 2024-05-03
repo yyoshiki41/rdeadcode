@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"flag"
+	"format/gofmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -63,6 +64,7 @@ func main() {
 	}
 	defer output.Close()
 
+	// TODO: Restore original file if we encounter an error
 	writer := bufio.NewWriter(output)
 	for _, line := range lines {
 		if _, err := writer.WriteString(line + "\n"); err != nil {
@@ -71,5 +73,10 @@ func main() {
 	}
 	if err := writer.Flush(); err != nil {
 		log.Fatalf("Failed to flush writer: %v", err)
+	}
+
+	// run gofmt on the file
+	if err := gofmt.Format(fileName); err != nil {
+		log.Fatalf("Failed to run gofmt: %v", err)
 	}
 }
