@@ -34,12 +34,12 @@ func main() {
 		log.Fatalf("Failed to parse file: %v", err)
 	}
 
-	var startLine, endLine int
+	var start, end int
 	ast.Inspect(node, func(n ast.Node) bool {
 		fn, ok := n.(*ast.FuncDecl)
 		if ok && fn.Name.Name == functionName {
-			startLine = fset.Position(fn.Pos()).Line
-			endLine = fset.Position(fn.End()).Line
+			start = fset.Position(fn.Pos()).Line
+			end = fset.Position(fn.End()).Line
 			return false
 		}
 		return true
@@ -54,7 +54,7 @@ func main() {
 	buf := new(bytes.Buffer)
 	scanner := bufio.NewScanner(file)
 	for l := 1; scanner.Scan(); {
-		if l < startLine || l > endLine {
+		if l < start || l > end {
 			if _, err := buf.Write(append(scanner.Bytes(), '\n')); err != nil {
 				log.Fatalf("Failed to write to buffer: %v", err)
 			}
@@ -71,7 +71,11 @@ func main() {
 		log.Fatalf("Failed to format source: %v", err)
 	}
 	// write to file
-	if err := os.WriteFile(fileName, b, 0644); err != nil {
+	info, err := file.Stat()
+	if err != nil {
+		log.Fatalf("Failed to get file info: %v", err)
+	}
+	if err := os.WriteFile(fileName, b, info.Mode()); err != nil {
 		log.Fatalf("Failed to write to file: %v", err)
 	}
 }
