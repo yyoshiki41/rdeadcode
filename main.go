@@ -2,9 +2,10 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"flag"
-	"format/gofmt"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/token"
 	"log"
@@ -20,6 +21,12 @@ func main() {
 	flag.StringVar(&fileName, "file", "", "File to remove function from")
 	flag.StringVar(&functionName, "fn", "", "File to remove function from (shorthand)")
 	flag.StringVar(&functionName, "function", "", "Function to remove")
+	flag.Parse()
+
+	if fileName == "" || functionName == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
 
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, fileName, nil, parser.ParseComments)
@@ -44,39 +51,27 @@ func main() {
 	}
 	defer file.Close()
 
+	buf := new(bytes.Buffer)
 	scanner := bufio.NewScanner(file)
-	var lines []string
-	currentLine := 1
-	for scanner.Scan() {
-		if currentLine < startLine || currentLine > endLine {
-			lines = append(lines, scanner.Text())
+	for l := 1; scanner.Scan(); {
+		if l < startLine || l > endLine {
+			if _, err := buf.Write(append(scanner.Bytes(), '\n')); err != nil {
+				log.Fatalf("Failed to write to buffer: %v", err)
+			}
 		}
-		currentLine++
+		l++
 	}
-
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Failed to read file: %v", err)
 	}
 
-	output, err := os.Create(fileName)
+	// run gofmt
+	b, err := format.Source(buf.Bytes())
 	if err != nil {
-		log.Fatalf("Failed to open file for writing: %v", err)
+		log.Fatalf("Failed to format source: %v", err)
 	}
-	defer output.Close()
-
-	// TODO: Restore original file if we encounter an error
-	writer := bufio.NewWriter(output)
-	for _, line := range lines {
-		if _, err := writer.WriteString(line + "\n"); err != nil {
-			log.Fatalf("Failed to write to file: %v", err)
-		}
-	}
-	if err := writer.Flush(); err != nil {
-		log.Fatalf("Failed to flush writer: %v", err)
-	}
-
-	// run gofmt on the file
-	if err := gofmt.Format(fileName); err != nil {
-		log.Fatalf("Failed to run gofmt: %v", err)
+	// write to file
+	if err := os.WriteFile(fileName, b, 0644); err != nil {
+		log.Fatalf("Failed to write to file: %v", err)
 	}
 }
