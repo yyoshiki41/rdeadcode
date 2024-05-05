@@ -22,7 +22,7 @@ func fix(filename, functionName string) error {
 		return err
 	}
 
-	if err := rewrite(filename, start, end); err != nil {
+	if err := replaceLines(filename, start, end); err != nil {
 		return err
 	}
 	return nil
@@ -74,7 +74,7 @@ func lookup(filename, functionName string) (int, int, error) {
 	return start, end, nil
 }
 
-func rewrite(filename string, start, end int) error {
+func replaceLines(filename string, start, end int) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -101,11 +101,16 @@ func rewrite(filename string, start, end int) error {
 		return err
 	}
 	// write to file
+	return writeFile(file, b)
+}
+
+func writeFile(file *os.File, b []byte) error {
+	// write to file
 	info, err := file.Stat()
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile(filename, b, info.Mode()); err != nil {
+	if err := os.WriteFile(file.Name(), b, info.Mode()); err != nil {
 		return err
 	}
 	return nil

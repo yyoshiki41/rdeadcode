@@ -8,19 +8,18 @@ import (
 	"rsc.io/script"
 )
 
-func TestGolden(t *testing.T) {
+func TestMainGolden(t *testing.T) {
 	ctx := context.Background()
 	state, err := script.NewState(ctx, "./", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = script.Cp().Run(state, "testdata/main.go", "testdata/main.go.backup")
-	if err != nil {
+	mainFile := "testdata/main.go"
+	if _, err := script.Cp().Run(state, mainFile, mainFile+".backup"); err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
-		_, err = script.Mv().Run(state, "testdata/main.go.backup", "testdata/main.go")
-		if err != nil {
+		if _, err := script.Mv().Run(state, mainFile+".backup", mainFile); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -34,9 +33,21 @@ func TestGolden(t *testing.T) {
 	os.Stdin = f
 	main()
 
-	got, err := os.Stat("testdata/main.go")
-	expected, err := os.Stat("testdata/main.go.golden")
-	if !os.SameFile(got, expected) {
-		t.Errorf("unexpected file content")
+	checkContent(t, mainFile, mainFile+".golden")
+}
+
+func checkContent(t *testing.T, f1, f2 string) {
+	t.Helper()
+
+	got, err := os.ReadFile(f1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected, err := os.ReadFile(f2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != string(expected) {
+		t.Errorf("got %s, expected %s", got, expected)
 	}
 }
