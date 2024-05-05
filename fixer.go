@@ -9,6 +9,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -17,6 +18,14 @@ var (
 )
 
 func fix(filename, functionName string) error {
+	if i := *ignoreFileFlag; i != "" {
+		if ok, err := regexp.MatchString(i, filename); err != nil {
+			return err
+		} else if ok {
+			return nil
+		}
+	}
+
 	start, end, err := lookup(filename, functionName)
 	if err != nil {
 		return err
