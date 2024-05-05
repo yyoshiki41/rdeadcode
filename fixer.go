@@ -9,7 +9,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
-	"regexp"
+	"path/filepath"
 	"strings"
 )
 
@@ -18,11 +18,15 @@ var (
 )
 
 func fix(filename, functionName string) error {
-	if i := *ignoreFileFlag; i != "" {
-		if ok, err := regexp.MatchString(i, filename); err != nil {
+	if p := *ignoreFileFlag; p != "" {
+		matches, err := filepath.Glob(p)
+		if err != nil {
 			return err
-		} else if ok {
-			return nil
+		}
+		for _, match := range matches {
+			if match == filename {
+				return nil
+			}
 		}
 	}
 
