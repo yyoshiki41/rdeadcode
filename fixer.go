@@ -9,6 +9,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"strings"
 )
 
 func fix(filename, functionName string) error {
@@ -29,14 +30,40 @@ func lookup(filename, functionName string) (int, int, error) {
 	if err != nil {
 		return 0, 0, err
 	}
+	funcParts := strings.Split(functionName, ".")
 
 	var start, end int
 	ast.Inspect(node, func(n ast.Node) bool {
-		funcDecl, ok := n.(*ast.FuncDecl)
-		if ok && funcDecl.Name.Name == functionName {
-			start = fset.Position(funcDecl.Pos()).Line
-			end = fset.Position(funcDecl.End()).Line
-			return false
+		switch t := n.(type) {
+		case *ast.FuncDecl:
+			if len(funcParts) == 2 {
+				// handle method
+				if t.Name.Name == funcParts[1] {
+					if t.Recv != nil {
+						for _, field := range t.Recv.List {
+							var ident *ast.Ident
+							switch field.Type.(type) {
+							case *ast.Ident:
+								ident = field.Type.(*ast.Ident)
+							case *ast.StarExpr:
+								ident = field.Type.(*ast.StarExpr).X.(*ast.Ident)
+							}
+							if ident != nil && ident.Name == funcParts[0] {
+								start = fset.Position(t.Pos()).Line
+								end = fset.Position(t.End()).Line
+								return false
+							}
+						}
+					}
+				}
+			} else {
+				// handle function
+				if t.Name.Name == functionName {
+					start = fset.Position(t.Pos()).Line
+					end = fset.Position(t.End()).Line
+					return false
+				}
+			}
 		}
 		return true
 	})
