@@ -13,9 +13,9 @@ func TestLookup(t *testing.T) {
 		start, end             int
 		err                    error
 	}{
-		{"testdata/lookup.go", "Reachable", 14, 16, nil},
-		{"testdata/lookup.go", "myString.String", 33, 35, nil},
-		{"testdata/lookup.go", "myString.Unreachable", 41, 43, nil},
+		{"testdata/lookup.go", "Reachable", 7, 9, nil},
+		{"testdata/lookup.go", "myString.String", 15, 17, nil},
+		{"testdata/lookup.go", "myString.Unreachable", 19, 21, nil},
 		{"testdata/lookup.go", "NotFound", 0, 0, ErrFuncNotFound},
 	}
 

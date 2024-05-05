@@ -1,4 +1,4 @@
-module github.com/yyoshiki41/rm-deadcode
+module github.com/yyoshiki41/rdeadcode
 
 go 1.22.2
 
