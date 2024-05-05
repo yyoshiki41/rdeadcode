@@ -12,6 +12,10 @@ import (
 	"strings"
 )
 
+var (
+	ErrFuncNotFound = fmt.Errorf("not found")
+)
+
 func fix(filename, functionName string) error {
 	start, end, err := lookup(filename, functionName)
 	if err != nil {
@@ -65,7 +69,7 @@ func lookup(filename, functionName string) (int, int, error) {
 		return true
 	})
 	if start == 0 || end == 0 {
-		return 0, 0, fmt.Errorf("func %s not found in %s", functionName, filename)
+		return 0, 0, fmt.Errorf("%w, func %s in %s", ErrFuncNotFound, functionName, filename)
 	}
 	return start, end, nil
 }
