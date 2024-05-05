@@ -12,9 +12,9 @@ func TestLookup(t *testing.T) {
 		start, end             int
 		err                    error
 	}{
-		{"testdata/reachable.go", "Reachable", 5, 7, nil},
-		{"testdata/stringer.go", "myString.String", 12, 14, nil},
-		{"testdata/stringer.go", "myString.Unreachable", 20, 22, nil},
+		{"testdata/main.go", "Reachable", 14, 16, nil},
+		{"testdata/main.go", "myString.String", 33, 35, nil},
+		{"testdata/main.go", "myString.Unreachable", 41, 43, nil},
 	}
 
 	for _, tt := range tests {

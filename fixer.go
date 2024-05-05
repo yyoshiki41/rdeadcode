@@ -36,29 +36,26 @@ func lookup(filename, functionName string) (int, int, error) {
 	ast.Inspect(node, func(n ast.Node) bool {
 		switch t := n.(type) {
 		case *ast.FuncDecl:
-			if len(funcParts) == 2 {
+			if len(funcParts) == 2 && t.Recv != nil {
 				// handle method
-				if t.Name.Name == funcParts[1] {
-					if t.Recv != nil {
-						for _, field := range t.Recv.List {
-							var ident *ast.Ident
-							switch field.Type.(type) {
-							case *ast.Ident:
-								ident = field.Type.(*ast.Ident)
-							case *ast.StarExpr:
-								ident = field.Type.(*ast.StarExpr).X.(*ast.Ident)
-							}
-							if ident != nil && ident.Name == funcParts[0] {
-								start = fset.Position(t.Pos()).Line
-								end = fset.Position(t.End()).Line
-								return false
-							}
-						}
+				for _, field := range t.Recv.List {
+					var ident *ast.Ident
+					switch field.Type.(type) {
+					case *ast.Ident:
+						ident = field.Type.(*ast.Ident)
+					case *ast.StarExpr:
+						ident = field.Type.(*ast.StarExpr).X.(*ast.Ident)
+					}
+					if ident != nil && ident.Name == funcParts[0] &&
+						t.Name.Name == funcParts[1] {
+						start = fset.Position(t.Pos()).Line
+						end = fset.Position(t.End()).Line
+						return false
 					}
 				}
 			} else {
 				// handle function
-				if t.Name.Name == functionName {
+				if t.Name.Name == functionName && t.Recv == nil {
 					start = fset.Position(t.Pos()).Line
 					end = fset.Position(t.End()).Line
 					return false
