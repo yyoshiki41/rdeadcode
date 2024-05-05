@@ -5,21 +5,26 @@ Parse the output of [deadcode](https://go.dev/blog/deadcode) and remove(rewrite)
 ## Installation
 
 ```shell
-go get -u github.com/yyoshiki41/rdeadcode
+go install github.com/yyoshiki41/rdeadcode@latest
 ```
 
 ## Usage
 
 ```shell
-deadcode -json ./path/to/your/project | rdeadcode
-// equivalent to
+deadcode -json -test ./path/to/your/project | rdeadcode
+```
+
+or
+
+```shell
 rdeadcode -json deadcode.json
 ```
 
-or passed the args to `rdeadcode` directly.
+### Independent features of `rdeadcode`
+
+passed the argument `-file` and `-function` to remove the dead code from the file.
 
 ```shell
-// remove the dead function from the file
 rdeadcode -file path/to/your/file.go -function deadFunction
 ```
 
@@ -29,7 +34,7 @@ rdeadcode -file path/to/your/file.go -function deadFunction
 > _deadcode_ detects methods that implement an interface as dead code if it is not used in the project.
 
 Please verify the interface compliance at compile time and restore the method when rdeadcode removes it.
- 
+
 ```go
 // Verify interface compliance at compile time
 var _ fmt.Stringer = myString{}
