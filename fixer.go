@@ -19,14 +19,12 @@ var (
 
 func fix(filename, functionName string) error {
 	if p := *ignoreFileFlag; p != "" {
-		matches, err := filepath.Glob(p)
+		matched, err := filepath.Match(p, filename)
 		if err != nil {
 			return err
 		}
-		for _, match := range matches {
-			if match == filename {
-				return nil
-			}
+		if matched {
+			return nil
 		}
 	}
 
