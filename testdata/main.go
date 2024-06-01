@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 func main() {
 	Reachable()
@@ -21,6 +24,10 @@ func Unreachable() {
 
 func ReachableByTest() {
 	fmt.Println("reachableByTest")
+}
+
+func UnusedImportStatementRemoval() context.Context {
+	return context.TODO() // Test unused import statement removal
 }
 
 var _ fmt.Stringer = myString{}

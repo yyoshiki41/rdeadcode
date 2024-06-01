@@ -13,10 +13,10 @@ func TestLookup(t *testing.T) {
 		start, end             int
 		err                    error
 	}{
-		{"testdata/lookup.go", "Reachable", 7, 9, nil},
-		{"testdata/lookup.go", "myString.String", 15, 17, nil},
-		{"testdata/lookup.go", "myString.Unreachable", 19, 21, nil},
-		{"testdata/lookup.go", "NotFound", 0, 0, ErrFuncNotFound},
+		{"testdata/lookup.txt", "Reachable", 7, 9, nil},
+		{"testdata/lookup.txt", "myString.String", 15, 17, nil},
+		{"testdata/lookup.txt", "myString.Unreachable", 19, 21, nil},
+		{"testdata/lookup.txt", "NotFound", 0, 0, ErrFuncNotFound},
 	}
 
 	for _, tt := range tests {

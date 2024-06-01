@@ -1,13 +1,22 @@
 [
   {
     "Name": "main",
-    "Path": "github.com/yyoshiki41/rm-deadcode/testdata",
+    "Path": "github.com/yyoshiki41/rdeadcode",
     "Funcs": [
       {
         "Name": "Unreachable",
         "Position": {
           "File": "testdata/main.go",
-          "Line": 18,
+          "Line": 21,
+          "Col": 6
+        },
+        "Generated": false
+      },
+      {
+        "Name": "UnusedImportStatementRemoval",
+        "Position": {
+          "File": "testdata/main.go",
+          "Line": 29,
           "Col": 6
         },
         "Generated": false
@@ -16,7 +25,7 @@
         "Name": "myString.String",
         "Position": {
           "File": "testdata/main.go",
-          "Line": 33,
+          "Line": 40,
           "Col": 19
         },
         "Generated": false
@@ -25,7 +34,7 @@
         "Name": "myString.Unreachable",
         "Position": {
           "File": "testdata/main.go",
-          "Line": 41,
+          "Line": 48,
           "Col": 20
         },
         "Generated": false

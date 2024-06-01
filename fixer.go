@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/tools/imports"
 )
 
 var (
@@ -106,8 +108,13 @@ func replaceLines(filename string, start, end int) error {
 		return err
 	}
 
-	// run gofmt
-	b, err := format.Source(buf.Bytes())
+	// run pkg.go.dev/golang.org/x/tools/imports
+	b, err := imports.Process(filename, buf.Bytes(), nil)
+	if err != nil {
+		return err
+	}
+	// format source code
+	b, err = format.Source(b)
 	if err != nil {
 		return err
 	}
