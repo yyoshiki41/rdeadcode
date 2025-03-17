@@ -1,7 +1,6 @@
 module github.com/yyoshiki41/rdeadcode
 
-go 1.22.2
-toolchain go1.24.1
+go 1.24.1
 
 require (
 	golang.org/x/tools v0.31.0
